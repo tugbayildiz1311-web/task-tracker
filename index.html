@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Task Tracker - Görev Takip Sistemi</title>
+
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+    <header class="site-header">
+        <div class="container">
+            <h1>Görev Takip Sistemi</h1>
+            <p>Görevlerini oluştur, düzenle ve takip et.</p>
+        </div>
+    </header>
+
+    <main class="container">
+
+        <section class="task-form-section">
+            <h2>Yeni Görev Ekle</h2>
+
+            <form class="task-form">
+
+                <div class="form-group">
+                    <label for="taskTitle">Görev Başlığı</label>
+                    <input
+                        type="text"
+                        id="taskTitle"
+                        name="taskTitle"
+                        maxlength="100"
+                        placeholder="Görev başlığını yazın"
+                    >
+                </div>
+
+                <div class="form-group">
+                    <label for="taskDescription">Açıklama</label>
+                    <textarea
+                        id="taskDescription"
+                        name="taskDescription"
+                        rows="4"
+                        placeholder="Görev açıklamasını yazın"
+                    ></textarea>
+                </div>
+
+                <div class="form-row">
+
+                    <div class="form-group">
+                        <label for="taskPriority">Öncelik</label>
+                        <select id="taskPriority" name="taskPriority">
+                            <option value="low">Low</option>
+                            <option value="medium" selected>Medium</option>
+                            <option value="high">High</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="taskStatus">Durum</label>
+                        <select id="taskStatus" name="taskStatus">
+                            <option value="todo">Todo</option>
+                            <option value="in-progress">In Progress</option>
+                            <option value="done">Done</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="taskDueDate">Son Tarih</label>
+                        <input
+                            type="date"
+                            id="taskDueDate"
+                            name="taskDueDate"
+                        >
+                    </div>
+
+                </div>
+
+                <button type="submit" class="button button-primary">
+                    Görevi Kaydet
+                </button>
+
+            </form>
+        </section>
+
+        <section class="filter-section">
+            <h2>Görevleri Filtrele</h2>
+
+            <div class="filter-grid">
+
+                <div class="form-group">
+                    <label for="taskSearch">Görev Ara</label>
+                    <input
+                        type="search"
+                        id="taskSearch"
+                        placeholder="Görev başlığı ara"
+                    >
+                </div>
+
+                <div class="form-group">
+                    <label for="statusFilter">Durum</label>
+                    <select id="statusFilter">
+                        <option value="all">Tümü</option>
+                        <option value="todo">Todo</option>
+                        <option value="in-progress">In Progress</option>
+                        <option value="done">Done</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="priorityFilter">Öncelik</label>
+                    <select id="priorityFilter">
+                        <option value="all">Tümü</option>
+                        <option value="low">Low</option>
+                        <option value="medium">Medium</option>
+                        <option value="high">High</option>
+                    </select>
+                </div>
+
+            </div>
+        </section>
+
+        <section class="task-list-section">
+            <h2>Görevler</h2>
+
+            <div class="task-list">
+
+                <article class="task-card">
+                    <div class="task-card-header">
+                        <h3>Staj raporunu tamamla</h3>
+                        <span class="badge badge-high">
+                            High
+                        </span>
+                    </div>
+
+                    <p>
+                        Günlük staj raporunu hazırlayıp kontrol et.
+                    </p>
+
+                    <div class="task-info">
+                        <span>Durum: Todo</span>
+                        <span>Son Tarih: 01.09.2026</span>
+                    </div>
+
+                    <div class="task-actions">
+                        <button type="button" class="button button-secondary">
+                            Düzenle
+                        </button>
+
+                        <button type="button" class="button button-danger">
+                            Sil
+                        </button>
+                    </div>
+                </article>
+
+                <article class="task-card">
+                    <div class="task-card-header">
+                        <h3>JavaScript tekrarını yap</h3>
+                        <span class="badge badge-medium">
+                            Medium
+                        </span>
+                    </div>
+
+                    <p>
+                        Array metotları ve DOM konularını tekrar et.
+                    </p>
+
+                    <div class="task-info">
+                        <span>Durum: In Progress</span>
+                        <span>Son Tarih: 03.09.2026</span>
+                    </div>
+
+                    <div class="task-actions">
+                        <button type="button" class="button button-secondary">
+                            Düzenle
+                        </button>
+
+                        <button type="button" class="button button-danger">
+                            Sil
+                        </button>
+                    </div>
+                </article>
+
+                <article class="task-card">
+                    <div class="task-card-header">
+                        <h3>README dosyasını güncelle</h3>
+                        <span class="badge badge-low">
+                            Low
+                        </span>
+                    </div>
+
+                    <p>
+                        Proje açıklamalarını ve kullanım notlarını düzenle.
+                    </p>
+
+                    <div class="task-info">
+                        <span>Durum: Done</span>
+                        <span>Son Tarih: 05.09.2026</span>
+                    </div>
+
+                    <div class="task-actions">
+                        <button type="button" class="button button-secondary">
+                            Düzenle
+                        </button>
+
+                        <button type="button" class="button button-danger">
+                            Sil
+                        </button>
+                    </div>
+                </article>
+
+            </div>
+
+            <div class="empty-state" hidden>
+                <h3>Henüz görev bulunmuyor</h3>
+                <p>Yeni bir görev ekleyerek başlayabilirsiniz.</p>
+            </div>
+
+        </section>
+
+    </main>
+
+    <footer class="site-footer">
+        <div class="container">
+            <p>Task Tracker</p>
+        </div>
+    </footer>
+
+</body>
+</html>

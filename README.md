@@ -159,3 +159,34 @@ task-tracker/
 ## MVP Yaklaşımı
 
 İlk sürümde temel görev yönetimi özelliklerinin eksiksiz ve çalışır olması hedeflenmektedir. İlk sürüm tamamlanmadan kullanıcı hesabı, backend, bildirim veya gelişmiş istatistik gibi ek özelliklere geçilmeyecektir.
+
+## Gün 24 - Responsive Arayüz
+
+Görev Takip Sistemi için JavaScript eklenmeden önce statik ve responsive kullanıcı arayüzü oluşturdum.
+
+Arayüzde:
+
+- Semantik `header`, `main`, `section` ve `footer` yapısı
+- Görev ekleme formu
+- Başlık, açıklama, öncelik, durum ve son tarih alanları
+- Arama alanı
+- Durum ve öncelik filtreleri
+- Üç statik görev kartı
+- Düzenle ve Sil butonları
+- High, Medium ve Low öncelik badge'leri
+- Boş liste görünümü
+- Klavye kullanıcıları için görünür focus durumları
+- Butonlarda hover durumları
+- Mobile-first responsive tasarım
+
+hazırladım.
+
+Mobil görünümde form, filtreler ve görev kartları tek sütun halinde görüntülenmektedir. Geniş ekranlarda görev kartları grid yapısına geçmektedir.
+
+### Masaüstü Görünümü
+
+![Masaüstü görünümü](screenshots/gun-24-masaustu.png)
+
+### 375px Mobil Görünüm
+
+![375px mobil görünüm](screenshots/gun-24-mobil-375px.png)
