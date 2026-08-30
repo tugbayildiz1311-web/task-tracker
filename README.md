@@ -474,3 +474,89 @@ Başlık alanına yalnızca boşluk girilmesini engelledim. Başlık doğrulama 
 #### Tarih Sıralama ve Geciken Görev
 
 ![Tarih sıralama ve geciken görev](screenshots/gun-27-tarih-siralama-ve-geciken-gorev.png)
+
+
+## Gün 28 - JavaScript Refactor ve Modüler Yapı
+
+Bugünkü çalışmada çalışan Görev Takip Sistemi kodunu özellikleri bozmadan yeniden düzenledim. JavaScript kodunu veri saklama, kullanıcı arayüzü ve uygulama akışı sorumluluklarına göre modüllere ayırdım.
+
+### Refactor Öncesi Dosya Yapısı
+
+```text
+js/
+├── app.js
+├── storage.js
+└── ui.js
+```
+
+Dosyalar ayrı olsa da birbirlerine normal script etiketleriyle bağlıydı ve fonksiyonlar global alanda kullanılıyordu.
+
+### Refactor Sonrası Dosya Yapısı
+
+```text
+task-tracker/
+├── index.html
+├── README.md
+├── css/
+│   └── style.css
+├── js/
+│   ├── app.js
+│   ├── storage.js
+│   └── ui.js
+└── screenshots/
+```
+
+JavaScript dosyalarının sorumluluklarını şu şekilde ayırdım:
+
+- `storage.js`: LocalStorage üzerinden görevleri yükleme ve kaydetme
+- `ui.js`: Görev kartlarını oluşturma, DOM yardımcıları ve kullanıcı mesajları
+- `app.js`: Event yönetimi, form işlemleri, CRUD işlemleri, arama ve filtreleme akışı
+
+### ES Modules
+
+`index.html` içerisinde JavaScript dosyasını ES Module olarak yükledim:
+
+```html
+<script type="module" src="js/app.js"></script>
+```
+
+Dosyalar arasında fonksiyon ve sabit paylaşımı için `export` ve `import` kullandım.
+
+### Kod Düzenlemeleri
+
+Uzun fonksiyonları daha küçük ve tek sorumluluklu fonksiyonlara ayırdım. Tekrarlanan görev bulma, tarih kontrolü ve filtreleme işlemlerini yardımcı fonksiyonlara taşıdım.
+
+`todo`, `in-progress` ve `done` gibi tekrar eden durum değerlerini ortak sabitlerde tuttum. Değişken ve fonksiyon isimlerini daha açıklayıcı hale getirdim ve kullanılmayan kodları temizledim.
+
+Görev kartlarındaki butonlar için ayrı ayrı event eklemek yerine event delegation yaklaşımı kullandım.
+
+### Refactor Sonrası Test Kontrol Listesi
+
+- [x] Yeni görev ekleme
+- [x] Görev düzenleme
+- [x] Görev silme ve onay işlemi
+- [x] Görev durumunu değiştirme
+- [x] LocalStorage kalıcılığı
+- [x] Başlık ve açıklamada arama
+- [x] Durum filtresi
+- [x] Öncelik filtresi
+- [x] Çoklu filtreleme
+- [x] Son tarihe göre sıralama
+- [x] Gecikmiş görev görünümü
+- [x] Sayfa yenileme sonrası verilerin korunması
+
+Refactor sonrasında uygulamanın önceki özelliklerinin çalışmaya devam ettiğini doğruladım.
+
+### Gün 28 Ekran Görüntüleri
+
+#### Modüler Dosya Yapısı
+
+![Modüler dosya yapısı](screenshots/gun-28-moduler-dosya-yapisi.png)
+
+#### Refactor Sonrası Uygulama
+
+![Refactor sonrası uygulama](screenshots/gun-28-refactor-sonrasi-uygulama.png)
+
+#### Refactor Sonrası Filtreleme
+
+![Refactor sonrası filtreleme](screenshots/gun-28-refactor-sonrasi-filtreleme.png)
