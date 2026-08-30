@@ -62,17 +62,9 @@
                             id="taskPriority"
                             name="taskPriority"
                         >
-                            <option value="low">
-                                Low
-                            </option>
-
-                            <option value="medium" selected>
-                                Medium
-                            </option>
-
-                            <option value="high">
-                                High
-                            </option>
+                            <option value="low">Low</option>
+                            <option value="medium" selected>Medium</option>
+                            <option value="high">High</option>
                         </select>
                     </div>
 
@@ -83,17 +75,9 @@
                             id="taskStatus"
                             name="taskStatus"
                         >
-                            <option value="todo">
-                                Todo
-                            </option>
-
-                            <option value="in-progress">
-                                In Progress
-                            </option>
-
-                            <option value="done">
-                                Done
-                            </option>
+                            <option value="todo">Todo</option>
+                            <option value="in-progress">In Progress</option>
+                            <option value="done">Done</option>
                         </select>
                     </div>
 
@@ -132,9 +116,7 @@
             <div class="filter-grid">
 
                 <div class="form-group">
-                    <label for="taskSearch">
-                        Görev Ara
-                    </label>
+                    <label for="taskSearch">Görev Ara</label>
 
                     <input
                         type="search"
@@ -144,63 +126,32 @@
                 </div>
 
                 <div class="form-group">
-                    <label for="statusFilter">
-                        Durum
-                    </label>
+                    <label for="statusFilter">Durum</label>
 
                     <select id="statusFilter">
-                        <option value="all">
-                            Tümü
-                        </option>
-
-                        <option value="todo">
-                            Todo
-                        </option>
-
-                        <option value="in-progress">
-                            In Progress
-                        </option>
-
-                        <option value="done">
-                            Done
-                        </option>
+                        <option value="all">Tümü</option>
+                        <option value="todo">Todo</option>
+                        <option value="in-progress">In Progress</option>
+                        <option value="done">Done</option>
                     </select>
                 </div>
 
                 <div class="form-group">
-                    <label for="priorityFilter">
-                        Öncelik
-                    </label>
+                    <label for="priorityFilter">Öncelik</label>
 
                     <select id="priorityFilter">
-                        <option value="all">
-                            Tümü
-                        </option>
-
-                        <option value="low">
-                            Low
-                        </option>
-
-                        <option value="medium">
-                            Medium
-                        </option>
-
-                        <option value="high">
-                            High
-                        </option>
+                        <option value="all">Tümü</option>
+                        <option value="low">Low</option>
+                        <option value="medium">Medium</option>
+                        <option value="high">High</option>
                     </select>
                 </div>
 
                 <div class="form-group">
-                    <label for="sortFilter">
-                        Sıralama
-                    </label>
+                    <label for="sortFilter">Sıralama</label>
 
                     <select id="sortFilter">
-                        <option value="default">
-                            Varsayılan
-                        </option>
-
+                        <option value="default">Varsayılan</option>
                         <option value="due-date-asc">
                             Son tarihe göre artan
                         </option>
@@ -250,9 +201,10 @@
     </footer>
 
 
-    <script src="js/storage.js"></script>
-    <script src="js/ui.js"></script>
-    <script src="js/app.js"></script>
+    <script
+        type="module"
+        src="js/app.js"
+    ></script>
 
 </body>
-</html>
+</html> 

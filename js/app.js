@@ -1,69 +1,37 @@
+import {
+    loadTasks,
+    saveTasks
+} from "./storage.js";
+
+
+import {
+    TASK_STATUS,
+    TASK_PRIORITY,
+    getDomElements,
+    renderTasks,
+    updateListState,
+    fillTaskForm,
+    resetTaskForm,
+    setEditMode,
+    showFormMessage,
+    showTitleError,
+    clearTitleError
+} from "./ui.js";
+
+
 let tasks = loadTasks();
 
 let editingTaskId = null;
 
-
-const taskForm =
-    document.getElementById("taskForm");
-
-const taskTitle =
-    document.getElementById("taskTitle");
-
-const taskDescription =
-    document.getElementById(
-        "taskDescription"
-    );
-
-const taskPriority =
-    document.getElementById(
-        "taskPriority"
-    );
-
-const taskStatus =
-    document.getElementById(
-        "taskStatus"
-    );
-
-const taskDueDate =
-    document.getElementById(
-        "taskDueDate"
-    );
-
-const formMessage =
-    document.getElementById(
-        "formMessage"
-    );
-
-const titleError =
-    document.getElementById(
-        "titleError"
-    );
-
-const submitButton =
-    taskForm.querySelector(
-        'button[type="submit"]'
-    );
+const elements =
+    getDomElements();
 
 
-const searchInput =
-    document.getElementById(
-        "taskSearch"
-    );
+const VALID_STATUSES =
+    Object.values(TASK_STATUS);
 
-const statusFilter =
-    document.getElementById(
-        "statusFilter"
-    );
-
-const priorityFilter =
-    document.getElementById(
-        "priorityFilter"
-    );
-
-const sortFilter =
-    document.getElementById(
-        "sortFilter"
-    );
+const VALID_PRIORITIES =
+    Object.values(TASK_PRIORITY);
 
 
 function createTaskId() {
@@ -79,15 +47,52 @@ function createTaskId() {
 }
 
 
+function getTaskById(taskId) {
+    return tasks.find(
+        (task) =>
+            String(task.id) ===
+            String(taskId)
+    );
+}
+
+
+function getTaskIndexById(taskId) {
+    return tasks.findIndex(
+        (task) =>
+            String(task.id) ===
+            String(taskId)
+    );
+}
+
+
+function getFormData() {
+    return {
+        title:
+            elements.taskTitle.value.trim(),
+
+        description:
+            elements.taskDescription.value.trim(),
+
+        priority:
+            elements.taskPriority.value,
+
+        status:
+            elements.taskStatus.value,
+
+        dueDate:
+            elements.taskDueDate.value
+    };
+}
+
+
 function validateTask(taskData) {
-    if (taskData.title === "") {
+    if (!taskData.title) {
         return {
             field: "title",
             message:
                 "Görev başlığı boş bırakılamaz."
         };
     }
-
 
     if (taskData.title.length > 100) {
         return {
@@ -97,15 +102,8 @@ function validateTask(taskData) {
         };
     }
 
-
-    const validPriorities = [
-        "low",
-        "medium",
-        "high"
-    ];
-
     if (
-        !validPriorities.includes(
+        !VALID_PRIORITIES.includes(
             taskData.priority
         )
     ) {
@@ -116,15 +114,8 @@ function validateTask(taskData) {
         };
     }
 
-
-    const validStatuses = [
-        "todo",
-        "in-progress",
-        "done"
-    ];
-
     if (
-        !validStatuses.includes(
+        !VALID_STATUSES.includes(
             taskData.status
         )
     ) {
@@ -135,26 +126,7 @@ function validateTask(taskData) {
         };
     }
 
-
-    if (taskData.dueDate === "") {
-        return {
-            field: "form",
-            message:
-                "Son tarih boş bırakılamaz."
-        };
-    }
-
-
-    const dateObject =
-        new Date(
-            `${taskData.dueDate}T00:00:00`
-        );
-
-    if (
-        Number.isNaN(
-            dateObject.getTime()
-        )
-    ) {
+    if (!isValidDate(taskData.dueDate)) {
         return {
             field: "form",
             message:
@@ -162,103 +134,134 @@ function validateTask(taskData) {
         };
     }
 
-
     return null;
 }
 
 
-function showFormMessage(
-    message,
-    type
-) {
-    formMessage.textContent =
-        message;
-
-    formMessage.classList.remove(
-        "message-success",
-        "message-error"
-    );
-
-
-    if (type === "success") {
-        formMessage.classList.add(
-            "message-success"
-        );
+function isValidDate(date) {
+    if (!date) {
+        return false;
     }
 
+    const dateObject =
+        new Date(`${date}T00:00:00`);
 
-    if (type === "error") {
-        formMessage.classList.add(
-            "message-error"
-        );
-    }
-}
-
-
-function clearValidationMessages() {
-    titleError.textContent = "";
-
-    taskTitle.classList.remove(
-        "input-invalid"
+    return !Number.isNaN(
+        dateObject.getTime()
     );
 }
 
 
-function showValidationError(error) {
-    clearValidationMessages();
-
-
+function handleValidationError(error) {
     if (error.field === "title") {
-        titleError.textContent =
-            error.message;
-
-        taskTitle.classList.add(
-            "input-invalid"
+        showTitleError(
+            elements,
+            error.message
         );
-
-        taskTitle.focus();
 
         return;
     }
 
-
     showFormMessage(
+        elements,
         error.message,
         "error"
     );
 }
 
 
-function resetFormMode() {
-    editingTaskId = null;
+function createTask(taskData) {
+    return {
+        id:
+            createTaskId(),
 
-    taskForm.reset();
+        title:
+            taskData.title,
 
-    taskPriority.value = "medium";
-    taskStatus.value = "todo";
+        description:
+            taskData.description,
 
-    submitButton.textContent =
-        "Görevi Kaydet";
+        priority:
+            taskData.priority,
 
-    clearValidationMessages();
+        status:
+            taskData.status,
+
+        dueDate:
+            taskData.dueDate,
+
+        createdAt:
+            new Date().toISOString()
+    };
 }
 
 
-function getTaskById(taskId) {
-    return tasks.find(
-        (task) =>
-            task.id === taskId
+function addTask(taskData) {
+    tasks.push(
+        createTask(taskData)
+    );
+
+    saveAndRefresh();
+
+    finishFormAction(
+        "Görev başarıyla eklendi."
     );
 }
 
 
-function editTask(taskId) {
+function updateTask(taskData) {
+    const taskIndex =
+        getTaskIndexById(
+            editingTaskId
+        );
+
+    if (taskIndex === -1) {
+        editingTaskId = null;
+
+        resetTaskForm(elements);
+
+        showFormMessage(
+            elements,
+            "Güncellenecek görev bulunamadı.",
+            "error"
+        );
+
+        return;
+    }
+
+    tasks[taskIndex] = {
+        ...tasks[taskIndex],
+        ...taskData
+    };
+
+    saveAndRefresh();
+
+    finishFormAction(
+        "Görev başarıyla güncellendi."
+    );
+}
+
+
+function finishFormAction(message) {
+    editingTaskId = null;
+
+    resetTaskForm(elements);
+
+    showFormMessage(
+        elements,
+        message,
+        "success"
+    );
+}
+
+
+function startEditingTask(taskId) {
     const task =
         getTaskById(taskId);
 
-
     if (!task) {
         showFormMessage(
+            elements,
             "Düzenlenecek görev bulunamadı.",
             "error"
         );
@@ -266,51 +269,24 @@ function editTask(taskId) {
         return;
     }
 
-
     editingTaskId = task.id;
 
-    taskTitle.value =
-        task.title;
+    fillTaskForm(
+        elements,
+        task
+    );
 
-    taskDescription.value =
-        task.description;
-
-    taskPriority.value =
-        task.priority;
-
-    taskStatus.value =
-        task.status;
-
-    taskDueDate.value =
-        task.dueDate;
-
-
-    submitButton.textContent =
-        "Görevi Güncelle";
-
-
-    clearValidationMessages();
-
-    taskTitle.focus();
-
-
-    window.scrollTo({
-        top: 0,
-        behavior: "smooth"
-    });
+    setEditMode(elements);
 }
 
 
 function deleteTask(taskId) {
     const taskIndex =
-        tasks.findIndex(
-            (task) =>
-                task.id === taskId
-        );
-
+        getTaskIndexById(taskId);
 
     if (taskIndex === -1) {
         showFormMessage(
+            elements,
             "Silinecek görev bulunamadı.",
             "error"
         );
@@ -318,39 +294,42 @@ function deleteTask(taskId) {
         return;
     }
 
-
-    const confirmed =
-        confirm(
-            "Bu görevi silmek istediğinize emin misiniz?"
-        );
-
-
-    if (!confirmed) {
+    if (!confirmDelete()) {
         return;
     }
 
+    tasks.splice(taskIndex, 1);
 
-    tasks.splice(
-        taskIndex,
-        1
-    );
+    handleDeletedEditingTask(taskId);
 
-    saveTasks(tasks);
-
-    applyFilters();
-
-
-    if (
-        editingTaskId === taskId
-    ) {
-        resetFormMode();
-    }
-
+    saveAndRefresh();
 
     showFormMessage(
+        elements,
         "Görev başarıyla silindi.",
         "success"
     );
+}
+
+
+function confirmDelete() {
+    return window.confirm(
+        "Bu görevi silmek istediğinize emin misiniz?"
+    );
+}
+
+
+function handleDeletedEditingTask(taskId) {
+    if (
+        String(editingTaskId) !==
+        String(taskId)
+    ) {
+        return;
+    }
+
+    editingTaskId = null;
+
+    resetTaskForm(elements);
 }
 
 
@@ -358,9 +337,9 @@ function changeTaskStatus(taskId) {
     const task =
         getTaskById(taskId);
 
-
     if (!task) {
         showFormMessage(
+            elements,
             "Durumu değiştirilecek görev bulunamadı.",
             "error"
         );
@@ -368,375 +347,354 @@ function changeTaskStatus(taskId) {
         return;
     }
 
+    task.status =
+        getNextStatus(task.status);
 
-    if (task.status === "todo") {
-        task.status =
-            "in-progress";
-
-    } else if (
-        task.status ===
-        "in-progress"
-    ) {
-        task.status = "done";
-
-    } else {
-        task.status = "todo";
-    }
-
-
-    saveTasks(tasks);
-
-    applyFilters();
-
+    saveAndRefresh();
 
     showFormMessage(
+        elements,
         "Görev durumu güncellendi.",
         "success"
     );
 }
 
 
-function getDateForSorting(date) {
-    if (!date) {
-        return null;
-    }
+function getNextStatus(currentStatus) {
+    const statusOrder = [
+        TASK_STATUS.TODO,
+        TASK_STATUS.IN_PROGRESS,
+        TASK_STATUS.DONE
+    ];
 
-
-    const dateObject =
-        new Date(
-            `${date}T00:00:00`
+    const currentIndex =
+        statusOrder.indexOf(
+            currentStatus
         );
 
+    const nextIndex =
+        (currentIndex + 1) %
+        statusOrder.length;
 
-    if (
-        Number.isNaN(
-            dateObject.getTime()
-        )
-    ) {
-        return null;
-    }
-
-
-    return dateObject;
+    return statusOrder[nextIndex];
 }
 
 
-function applyFilters() {
-    const searchText =
-        searchInput.value
-            .trim()
-            .toLowerCase();
-
-    const selectedStatus =
-        statusFilter.value;
-
-    const selectedPriority =
-        priorityFilter.value;
-
-    const selectedSort =
-        sortFilter.value;
+function saveAndRefresh() {
+    saveTasks(tasks);
+    applyFilters();
+}
 
 
-    let filteredTasks =
-        tasks.filter((task) => {
-            const normalizedTitle =
-                String(
-                    task.title || ""
-                ).toLowerCase();
+function getFilterState() {
+    return {
+        searchText:
+            elements.searchInput.value
+                .trim()
+                .toLowerCase(),
 
-            const normalizedDescription =
-                String(
-                    task.description || ""
-                ).toLowerCase();
+        status:
+            elements.statusFilter.value,
 
+        priority:
+            elements.priorityFilter.value,
 
-            const matchesSearch =
-                searchText === "" ||
-                normalizedTitle.includes(
-                    searchText
-                ) ||
-                normalizedDescription.includes(
-                    searchText
-                );
+        sort:
+            elements.sortFilter.value
+    };
+}
 
 
-            const matchesStatus =
-                selectedStatus ===
-                    "all" ||
-                task.status ===
-                    selectedStatus;
-
-
-            const matchesPriority =
-                selectedPriority ===
-                    "all" ||
-                task.priority ===
-                    selectedPriority;
-
-
-            return (
-                matchesSearch &&
-                matchesStatus &&
-                matchesPriority
-            );
-        });
-
-
-    if (
-        selectedSort ===
-        "due-date-asc"
-    ) {
-        filteredTasks =
-            [...filteredTasks].sort(
-                (firstTask, secondTask) => {
-                    const firstDate =
-                        getDateForSorting(
-                            firstTask.dueDate
-                        );
-
-                    const secondDate =
-                        getDateForSorting(
-                            secondTask.dueDate
-                        );
-
-
-                    if (
-                        !firstDate &&
-                        !secondDate
-                    ) {
-                        return 0;
-                    }
-
-
-                    if (!firstDate) {
-                        return 1;
-                    }
-
-
-                    if (!secondDate) {
-                        return -1;
-                    }
-
-
-                    return (
-                        firstDate -
-                        secondDate
-                    );
-                }
-            );
-    }
-
-
-    const hasActiveFilters =
-        searchText !== "" ||
-        selectedStatus !== "all" ||
-        selectedPriority !== "all" ||
-        selectedSort !== "default";
-
-
-    renderTasks(filteredTasks);
-
-    updateListState(
-        filteredTasks.length,
-        tasks.length,
-        hasActiveFilters
+function taskMatchesFilters(
+    task,
+    filters
+) {
+    return (
+        matchesSearch(task, filters.searchText) &&
+        matchesStatus(task, filters.status) &&
+        matchesPriority(task, filters.priority)
     );
 }
 
 
-taskForm.addEventListener(
-    "submit",
-    function (event) {
-        event.preventDefault();
+function matchesSearch(
+    task,
+    searchText
+) {
+    if (!searchText) {
+        return true;
+    }
 
-        clearValidationMessages();
+    const title =
+        String(
+            task.title || ""
+        ).toLowerCase();
 
+    const description =
+        String(
+            task.description || ""
+        ).toLowerCase();
 
-        const taskData = {
-            title:
-                taskTitle.value.trim(),
-
-            description:
-                taskDescription.value.trim(),
-
-            priority:
-                taskPriority.value,
-
-            status:
-                taskStatus.value,
-
-            dueDate:
-                taskDueDate.value
-        };
-
-
-        const validationError =
-            validateTask(taskData);
+    return (
+        title.includes(searchText) ||
+        description.includes(searchText)
+    );
+}
 
 
-        if (
-            validationError !== null
-        ) {
-            showValidationError(
-                validationError
-            );
-
-            return;
-        }
-
-
-        if (
-            editingTaskId !== null
-        ) {
-            const taskIndex =
-                tasks.findIndex(
-                    (task) =>
-                        task.id ===
-                        editingTaskId
-                );
+function matchesStatus(
+    task,
+    selectedStatus
+) {
+    return (
+        selectedStatus === "all" ||
+        task.status === selectedStatus
+    );
+}
 
 
-            if (taskIndex === -1) {
-                showFormMessage(
-                    "Güncellenecek görev bulunamadı.",
-                    "error"
-                );
-
-                resetFormMode();
-
-                return;
-            }
-
-
-            tasks[taskIndex] = {
-                ...tasks[taskIndex],
-
-                title:
-                    taskData.title,
-
-                description:
-                    taskData.description,
-
-                priority:
-                    taskData.priority,
-
-                status:
-                    taskData.status,
-
-                dueDate:
-                    taskData.dueDate
-            };
+function matchesPriority(
+    task,
+    selectedPriority
+) {
+    return (
+        selectedPriority === "all" ||
+        task.priority ===
+            selectedPriority
+    );
+}
 
 
-            saveTasks(tasks);
+function sortFilteredTasks(
+    filteredTasks,
+    sortType
+) {
+    if (sortType !== "due-date-asc") {
+        return filteredTasks;
+    }
 
-            applyFilters();
-
-            resetFormMode();
-
-
-            showFormMessage(
-                "Görev başarıyla güncellendi.",
-                "success"
-            );
-
-        } else {
-            const newTask = {
-                id:
-                    createTaskId(),
-
-                title:
-                    taskData.title,
-
-                description:
-                    taskData.description,
-
-                priority:
-                    taskData.priority,
-
-                status:
-                    taskData.status,
-
-                dueDate:
-                    taskData.dueDate,
-
-                createdAt:
-                    new Date().toISOString()
-            };
+    return [...filteredTasks].sort(
+        compareTasksByDueDate
+    );
+}
 
 
-            tasks.push(newTask);
-
-            saveTasks(tasks);
-
-            applyFilters();
-
-            resetFormMode();
-
-
-            showFormMessage(
-                "Görev başarıyla eklendi.",
-                "success"
-            );
-        }
-
-
-        setTimeout(
-            function () {
-                formMessage.textContent =
-                    "";
-
-                formMessage.classList.remove(
-                    "message-success",
-                    "message-error"
-                );
-            },
-            2500
+function compareTasksByDueDate(
+    firstTask,
+    secondTask
+) {
+    const firstDate =
+        getSortableDate(
+            firstTask.dueDate
         );
+
+    const secondDate =
+        getSortableDate(
+            secondTask.dueDate
+        );
+
+    if (!firstDate && !secondDate) {
+        return 0;
     }
-);
 
-
-taskTitle.addEventListener(
-    "input",
-    function () {
-        if (
-            taskTitle.value
-                .trim() !== ""
-        ) {
-            titleError.textContent =
-                "";
-
-            taskTitle.classList.remove(
-                "input-invalid"
-            );
-        }
+    if (!firstDate) {
+        return 1;
     }
-);
+
+    if (!secondDate) {
+        return -1;
+    }
+
+    return firstDate - secondDate;
+}
 
 
-searchInput.addEventListener(
-    "input",
-    applyFilters
-);
+function getSortableDate(date) {
+    if (!date) {
+        return null;
+    }
+
+    const dateObject =
+        new Date(`${date}T00:00:00`);
+
+    return Number.isNaN(
+        dateObject.getTime()
+    )
+        ? null
+        : dateObject;
+}
 
 
-statusFilter.addEventListener(
-    "change",
-    applyFilters
-);
+function hasActiveFilters(filters) {
+    return (
+        filters.searchText !== "" ||
+        filters.status !== "all" ||
+        filters.priority !== "all" ||
+        filters.sort !== "default"
+    );
+}
 
 
-priorityFilter.addEventListener(
-    "change",
-    applyFilters
-);
+function applyFilters() {
+    const filters =
+        getFilterState();
+
+    const matchingTasks =
+        tasks.filter(
+            (task) =>
+                taskMatchesFilters(
+                    task,
+                    filters
+                )
+        );
+
+    const visibleTasks =
+        sortFilteredTasks(
+            matchingTasks,
+            filters.sort
+        );
+
+    renderTasks(
+        visibleTasks,
+        elements.taskList
+    );
+
+    updateListState(
+        elements,
+        visibleTasks.length,
+        tasks.length,
+        hasActiveFilters(filters)
+    );
+}
 
 
-sortFilter.addEventListener(
-    "change",
-    applyFilters
-);
+function handleFormSubmit(event) {
+    event.preventDefault();
+
+    clearTitleError(elements);
+
+    const taskData =
+        getFormData();
+
+    const validationError =
+        validateTask(taskData);
+
+    if (validationError) {
+        handleValidationError(
+            validationError
+        );
+
+        return;
+    }
+
+    if (editingTaskId !== null) {
+        updateTask(taskData);
+        return;
+    }
+
+    addTask(taskData);
+}
 
 
-applyFilters();
+function handleTaskListClick(event) {
+    const button =
+        event.target.closest(
+            "button[data-action]"
+        );
+
+    if (!button) {
+        return;
+    }
+
+    const taskId =
+        button.dataset.id;
+
+    const action =
+        button.dataset.action;
+
+    handleTaskAction(
+        action,
+        taskId
+    );
+}
+
+
+function handleTaskAction(
+    action,
+    taskId
+) {
+    const actions = {
+        edit:
+            startEditingTask,
+
+        status:
+            changeTaskStatus,
+
+        delete:
+            deleteTask
+    };
+
+    const selectedAction =
+        actions[action];
+
+    if (selectedAction) {
+        selectedAction(taskId);
+    }
+}
+
+
+function handleTitleInput() {
+    if (
+        elements.taskTitle.value
+            .trim() !== ""
+    ) {
+        clearTitleError(elements);
+    }
+}
+
+
+function registerEvents() {
+    elements.taskForm.addEventListener(
+        "submit",
+        handleFormSubmit
+    );
+
+    elements.taskList.addEventListener(
+        "click",
+        handleTaskListClick
+    );
+
+    elements.taskTitle.addEventListener(
+        "input",
+        handleTitleInput
+    );
+
+    elements.searchInput.addEventListener(
+        "input",
+        applyFilters
+    );
+
+    elements.statusFilter.addEventListener(
+        "change",
+        applyFilters
+    );
+
+    elements.priorityFilter.addEventListener(
+        "change",
+        applyFilters
+    );
+
+    elements.sortFilter.addEventListener(
+        "change",
+        applyFilters
+    );
+}
+
+
+function initializeApp() {
+    registerEvents();
+    applyFilters();
+}
+
+
+initializeApp();
