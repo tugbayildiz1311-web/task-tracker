@@ -560,3 +560,254 @@ Refactor sonrasında uygulamanın önceki özelliklerinin çalışmaya devam ett
 #### Refactor Sonrası Filtreleme
 
 ![Refactor sonrası filtreleme](screenshots/gun-28-refactor-sonrasi-filtreleme.png)
+
+
+
+## Proje Hakkında
+
+Task Tracker, kullanıcıların görev oluşturmasını, düzenlemesini, silmesini, durumlarını değiştirmesini ve görevlerini filtreleyerek takip etmesini sağlayan JavaScript tabanlı bir görev yönetim uygulamasıdır.
+
+Proje staj sürecinde aşamalı olarak geliştirilmiştir. Statik HTML yapısından başlanarak dinamik DOM işlemleri, LocalStorage, CRUD işlemleri, arama, filtreleme, sıralama, ES Modules, refactor ve manuel test süreçleri uygulanmıştır.
+
+## Özellikler
+
+- Yeni görev oluşturma
+- Görev düzenleme
+- Onay alarak görev silme
+- Todo, In Progress ve Done durum geçişleri
+- Low, Medium ve High öncelik seviyeleri
+- Başlık ve açıklamada arama
+- Duruma göre filtreleme
+- Önceliğe göre filtreleme
+- Birden fazla filtrenin aynı anda kullanılması
+- Son tarihe göre artan sıralama
+- Gecikmiş görevlerin gösterilmesi
+- Tamamlanan görevlerin görsel olarak ayrılması
+- Gösterilen görev sayısının hesaplanması
+- LocalStorage ile kalıcı veri saklama
+- Form doğrulama
+- Bozuk LocalStorage verisinin kontrollü yönetilmesi
+- Responsive kullanıcı arayüzü
+
+## Teknolojiler
+
+Projede aşağıdaki teknolojiler kullanılmıştır:
+
+- HTML5
+- CSS3
+- JavaScript
+- ES Modules
+- DOM API
+- LocalStorage
+- Git
+- GitHub
+- Chrome DevTools
+- VS Code
+- Live Server
+
+## Kod Dosyalarının Görevleri
+
+### `storage.js`
+
+Görevlerin LocalStorage üzerinde saklanması ve tekrar yüklenmesinden sorumludur.
+
+Temel fonksiyonlar:
+
+- `loadTasks()`
+- `saveTasks()`
+
+Bozuk veya geçersiz LocalStorage verisi tespit edildiğinde kayıt güvenli şekilde temizlenmektedir.
+
+### `ui.js`
+
+Kullanıcı arayüzü ve DOM işlemlerinden sorumludur.
+
+Bu dosyada:
+
+- Görev kartlarının oluşturulması
+- Görevlerin ekrana basılması
+- Öncelik ve durum bilgilerinin gösterilmesi
+- Gecikmiş görev görünümü
+- Tamamlanan görev görünümü
+- Form mesajları
+- DOM yardımcı fonksiyonları
+
+yönetilmektedir.
+
+### `app.js`
+
+Uygulamanın ana çalışma akışından sorumludur.
+
+Bu dosyada:
+
+- Form submit işlemleri
+- Görev ekleme
+- Görev düzenleme
+- Görev silme
+- Durum değiştirme
+- Arama
+- Filtreleme
+- Sıralama
+- Event yönetimi
+- Form doğrulama
+- Event delegation
+
+işlemleri bulunmaktadır.
+
+## Kurulum
+
+Projeyi bilgisayarda çalıştırmak için:
+
+1. Proje dosyalarını bilgisayara indirin veya GitHub deposunu klonlayın.
+2. Proje klasörünü Visual Studio Code ile açın.
+3. VS Code içerisinde Live Server eklentisinin kurulu olduğundan emin olun.
+4. `index.html` dosyasını açın.
+5. Sağ alttaki `Go Live` butonuna basın.
+6. Uygulama tarayıcıda açılacaktır.
+
+Örnek adres:
+
+```text
+http://127.0.0.1:5500/index.html
+```
+
+Proje ES Modules kullandığı için `index.html` dosyasını doğrudan `file://` üzerinden açmak yerine Live Server kullanılması gerekmektedir.
+
+## Kullanım
+
+### Görev Ekleme
+
+Yeni Görev Ekle bölümünden:
+
+- Görev başlığı
+- Açıklama
+- Öncelik
+- Durum
+- Son tarih
+
+bilgileri girilir ve `Görevi Kaydet` butonuna basılır.
+
+### Görev Düzenleme
+
+Görev kartındaki `Düzenle` butonuna basıldığında mevcut görev bilgileri forma aktarılır.
+
+Form butonu:
+
+```text
+Görevi Güncelle
+```
+
+şeklinde değiştirilir.
+
+Kaydetme işleminden sonra mevcut görev güncellenir.
+
+### Görev Silme
+
+`Sil` butonuna basıldığında kullanıcıdan onay alınır.
+
+İşlem onaylandığında görev hem görev dizisinden hem de LocalStorage üzerinden kaldırılır.
+
+### Durum Değiştirme
+
+`Durum Değiştir` butonu görev durumunu aşağıdaki sırayla değiştirmektedir:
+
+```text
+Todo
+→ In Progress
+→ Done
+→ Todo
+```
+
+### Arama ve Filtreleme
+
+Görevler:
+
+- Başlık
+- Açıklama
+- Durum
+- Öncelik
+
+bilgilerine göre aranabilir ve filtrelenebilir.
+
+Arama, durum ve öncelik filtreleri aynı anda kullanılabilir.
+
+Görevler ayrıca son tarihe göre artan şekilde sıralanabilir.
+
+## Gün 29 - Manuel Testler
+
+Uygulamanın normal kullanım, sınır değer ve hatalı kullanıcı girişi senaryolarında doğru çalıştığını kontrol etmek amacıyla manuel testler gerçekleştirdim.
+
+| No | Test Adı | Uygulanan Adım | Beklenen Sonuç | Gerçek Sonuç | Durum |
+|---:|---|---|---|---|---|
+| 1 | Boş başlık | Başlık boş bırakılarak form gönderildi. | Görev eklenmemeli ve hata gösterilmeli. | Görev eklenmedi ve hata gösterildi. | Başarılı |
+| 2 | Yalnızca boşluk | Başlık alanına yalnızca boşluk girildi. | `trim()` sonrası boş kabul edilmeli. | Başlık boş kabul edildi ve hata gösterildi. | Başarılı |
+| 3 | 100 karakter başlık | Tam 100 karakterlik başlık girildi. | Görev eklenebilmeli. | Görev başarıyla eklendi. | Başarılı |
+| 4 | 100 karakterden uzun başlık | 100 karakterden uzun başlık girildi. | Uzunluk hatası gösterilmeli. | Hata mesajı doğru gösterildi. | Başarılı |
+| 5 | Görev ekleme | Geçerli bilgilerle görev eklendi. | Yeni görev listede görünmeli. | Görev başarıyla oluşturuldu. | Başarılı |
+| 6 | Görev düzenleme | Mevcut görev düzenlenip güncellendi. | Aynı görev güncellenmeli. | Görev başarıyla güncellendi. | Başarılı |
+| 7 | Silme - İptal | Silme penceresinde İptal seçildi. | Görev korunmalı. | Görev listede kaldı. | Başarılı |
+| 8 | Silme - Onay | Silme işlemi onaylandı. | Görev kaldırılmalı. | Görev başarıyla kaldırıldı. | Başarılı |
+| 9 | Durum değiştirme | Durum butonuna art arda basıldı. | Todo → In Progress → Done geçmeli. | Durum geçişleri doğru çalıştı. | Başarılı |
+| 10 | Arama | Başlık ve açıklamada kelime arandı. | Eşleşen görevler gösterilmeli. | Doğru sonuçlar gösterildi. | Başarılı |
+| 11 | Çoklu filtreleme | Durum ve öncelik birlikte seçildi. | İki koşula da uyan görevler kalmalı. | Filtreler birlikte çalıştı. | Başarılı |
+| 12 | Tarih sıralama | Artan tarih sıralaması seçildi. | En erken tarih önce gelmeli. | Görevler doğru sıralandı. | Başarılı |
+| 13 | Geçmiş son tarih | Geçmiş tarihli tamamlanmamış görev oluşturuldu. | `Gecikti` görünmeli. | Gecikti etiketi gösterildi. | Başarılı |
+| 14 | Done ve geçmiş tarih | Geçmiş tarihli görev Done yapıldı. | `Gecikti` görünmemeli. | Gecikti etiketi kaldırıldı. | Başarılı |
+| 15 | Sayfa yenileme | İşlem sonrası F5 yapıldı. | Görevler korunmalı. | LocalStorage verileri korundu. | Başarılı |
+| 16 | Tüm görevleri silme | Listedeki tüm görevler silindi. | Boş liste mesajı gösterilmeli. | `Henüz görev bulunmuyor` mesajı gösterildi. | Başarılı |
+| 17 | Bozuk LocalStorage | Geçersiz JSON kaydedilip sayfa yenilendi. | Uygulama çökmemeli. | Bozuk veri temizlendi ve uygulama çalışmaya devam etti. | Başarılı |
+
+## Bulunan ve Düzeltilen Hatalar
+
+Manuel testler sırasında bozuk LocalStorage verisinin yönetimi incelendi.
+
+Önceki yapıda geçersiz JSON okunamadığında uygulama boş dizi ile devam ediyordu ancak geçersiz kayıt LocalStorage içerisinde kalıyordu.
+
+`loadTasks()` fonksiyonunu güncelleyerek:
+
+- JSON parse işleminin başarısız olması
+- Parse edilen verinin dizi olmaması
+
+durumlarında bozuk LocalStorage kaydının temizlenmesini sağladım.
+
+Düzeltme sonrasında bozuk veri senaryosunu tekrar test ettim. Uygulamanın çökmemesi ve Console üzerinde JavaScript hatası oluşmaması doğrulandı.
+
+Düzeltme aşağıdaki ayrı Git commit'i ile kaydedildi:
+
+```text
+fix: bozuk localstorage verisi güvenli şekilde temizlendi
+```
+
+## Debug Kontrolü
+
+Chrome DevTools Sources sekmesinde `handleFormSubmit()` fonksiyonuna breakpoint ekledim.
+
+Form gönderme işlemini gerçekleştirerek kodun breakpoint üzerinde durduğunu ve fonksiyonun çalışma akışının adım adım incelenebildiğini doğruladım.
+
+Testlerin sonunda Chrome DevTools Console kontrol edildi ve uygulama üzerinde JavaScript hatası bulunmadığı doğrulandı.
+
+## Ekran Görüntüleri
+
+### Manuel Test Uygulaması
+
+![Manuel test uygulaması](screenshots/gun-29-manuel-test-uygulama.png)
+
+### Breakpoint ile Debug
+
+![Breakpoint debug](screenshots/gun-29-breakpoint-debug.png)
+
+### Bozuk LocalStorage Testi
+
+![LocalStorage hata testi](screenshots/gun-29-localstorage-hata-testi.png)
+
+### Console Hatasız Son Durum
+
+![Console hatasız son durum](screenshots/gun-29-console-hatasiz-son-durum.png)
+
+## Bilinen Kısıtlar
+
+- Uygulama verileri yalnızca kullanılan tarayıcının LocalStorage alanında saklanmaktadır.
+- Farklı tarayıcı veya cihazlarda aynı görevler otomatik olarak senkronize edilmez.
+- Uygulama bir backend veya uzak veritabanı kullanmamaktadır.
+- Tarayıcı verileri temizlenirse LocalStorage içerisindeki görevler de silinir.
+- ES Modules kullanıldığı için uygulamanın doğrudan `file://` üzerinden açılması tarayıcı güvenlik kısıtlamalarına neden olabilir. Bu nedenle Live Server kullanılması önerilmektedir.
