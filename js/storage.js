@@ -13,10 +13,21 @@ export function loadTasks() {
         const parsedTasks =
             JSON.parse(storedTasks);
 
-        return Array.isArray(parsedTasks)
-            ? parsedTasks
-            : [];
+        if (!Array.isArray(parsedTasks)) {
+            localStorage.removeItem(
+                STORAGE_KEY
+            );
+
+            return [];
+        }
+
+        return parsedTasks;
+
     } catch {
+        localStorage.removeItem(
+            STORAGE_KEY
+        );
+
         return [];
     }
 }
