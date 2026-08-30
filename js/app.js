@@ -1,9 +1,14 @@
 let tasks = loadTasks();
 
+let editingTaskId = null;
 
-const taskForm = document.getElementById("taskForm");
 
-const taskTitle = document.getElementById("taskTitle");
+const taskForm =
+    document.getElementById("taskForm");
+
+const taskTitle =
+    document.getElementById("taskTitle");
+
 const taskDescription =
     document.getElementById("taskDescription");
 
@@ -18,6 +23,9 @@ const taskDueDate =
 
 const formMessage =
     document.getElementById("formMessage");
+
+const submitButton =
+    taskForm.querySelector('button[type="submit"]');
 
 
 function createTaskId() {
@@ -64,7 +72,9 @@ function validateTask(taskData) {
     if (
         taskData.dueDate === "" ||
         Number.isNaN(
-            new Date(`${taskData.dueDate}T00:00:00`).getTime()
+            new Date(
+                `${taskData.dueDate}T00:00:00`
+            ).getTime()
         )
     ) {
         return "Geçerli bir son tarih seçiniz.";
@@ -96,6 +106,126 @@ function showFormMessage(message, type) {
 }
 
 
+function resetFormMode() {
+    editingTaskId = null;
+
+    taskForm.reset();
+
+    taskPriority.value = "medium";
+    taskStatus.value = "todo";
+
+    submitButton.textContent = "Görevi Kaydet";
+}
+
+
+function editTask(taskId) {
+    const task = tasks.find(
+        (task) => task.id === taskId
+    );
+
+    if (!task) {
+        showFormMessage(
+            "Düzenlenecek görev bulunamadı.",
+            "error"
+        );
+
+        return;
+    }
+
+    editingTaskId = task.id;
+
+    taskTitle.value = task.title;
+    taskDescription.value = task.description;
+    taskPriority.value = task.priority;
+    taskStatus.value = task.status;
+    taskDueDate.value = task.dueDate;
+
+    submitButton.textContent =
+        "Görevi Güncelle";
+
+    taskTitle.focus();
+
+    window.scrollTo({
+        top: 0,
+        behavior: "smooth"
+    });
+}
+
+
+function deleteTask(taskId) {
+    const taskIndex = tasks.findIndex(
+        (task) => task.id === taskId
+    );
+
+    if (taskIndex === -1) {
+        showFormMessage(
+            "Silinecek görev bulunamadı.",
+            "error"
+        );
+
+        return;
+    }
+
+    const confirmed = confirm(
+        "Bu görevi silmek istediğinize emin misiniz?"
+    );
+
+    if (!confirmed) {
+        return;
+    }
+
+    tasks.splice(taskIndex, 1);
+
+    saveTasks(tasks);
+
+    renderTasks(tasks);
+
+    if (editingTaskId === taskId) {
+        resetFormMode();
+    }
+
+    showFormMessage(
+        "Görev başarıyla silindi.",
+        "success"
+    );
+}
+
+
+function changeTaskStatus(taskId) {
+    const task = tasks.find(
+        (task) => task.id === taskId
+    );
+
+    if (!task) {
+        showFormMessage(
+            "Durumu değiştirilecek görev bulunamadı.",
+            "error"
+        );
+
+        return;
+    }
+
+    if (task.status === "todo") {
+        task.status = "in-progress";
+
+    } else if (task.status === "in-progress") {
+        task.status = "done";
+
+    } else {
+        task.status = "todo";
+    }
+
+    saveTasks(tasks);
+
+    renderTasks(tasks);
+
+    showFormMessage(
+        "Görev durumu güncellendi.",
+        "success"
+    );
+}
+
+
 taskForm.addEventListener(
     "submit",
     function (event) {
@@ -103,11 +233,18 @@ taskForm.addEventListener(
 
         const taskData = {
             title: taskTitle.value.trim(),
+
             description:
                 taskDescription.value.trim(),
-            priority: taskPriority.value,
-            status: taskStatus.value,
-            dueDate: taskDueDate.value
+
+            priority:
+                taskPriority.value,
+
+            status:
+                taskStatus.value,
+
+            dueDate:
+                taskDueDate.value
         };
 
 
@@ -124,39 +261,95 @@ taskForm.addEventListener(
         }
 
 
-        const newTask = {
-            id: createTaskId(),
-            title: taskData.title,
-            description: taskData.description,
-            priority: taskData.priority,
-            status: taskData.status,
-            dueDate: taskData.dueDate,
-            createdAt: new Date().toISOString()
-        };
+        if (editingTaskId !== null) {
+            const taskIndex = tasks.findIndex(
+                (task) =>
+                    task.id === editingTaskId
+            );
 
+            if (taskIndex === -1) {
+                showFormMessage(
+                    "Güncellenecek görev bulunamadı.",
+                    "error"
+                );
 
-        tasks.push(newTask);
+                resetFormMode();
+                return;
+            }
 
-        saveTasks(tasks);
+            tasks[taskIndex] = {
+                ...tasks[taskIndex],
 
-        renderTasks(tasks);
+                title: taskData.title,
 
-        taskForm.reset();
+                description:
+                    taskData.description,
 
-        taskPriority.value = "medium";
-        taskStatus.value = "todo";
+                priority:
+                    taskData.priority,
 
-        showFormMessage(
-            "Görev başarıyla eklendi.",
-            "success"
-        );
+                status:
+                    taskData.status,
+
+                dueDate:
+                    taskData.dueDate
+            };
+
+            saveTasks(tasks);
+
+            renderTasks(tasks);
+
+            resetFormMode();
+
+            showFormMessage(
+                "Görev başarıyla güncellendi.",
+                "success"
+            );
+
+        } else {
+            const newTask = {
+                id: createTaskId(),
+
+                title:
+                    taskData.title,
+
+                description:
+                    taskData.description,
+
+                priority:
+                    taskData.priority,
+
+                status:
+                    taskData.status,
+
+                dueDate:
+                    taskData.dueDate,
+
+                createdAt:
+                    new Date().toISOString()
+            };
+
+            tasks.push(newTask);
+
+            saveTasks(tasks);
+
+            renderTasks(tasks);
+
+            resetFormMode();
+
+            showFormMessage(
+                "Görev başarıyla eklendi.",
+                "success"
+            );
+        }
 
 
         setTimeout(function () {
             formMessage.textContent = "";
 
             formMessage.classList.remove(
-                "message-success"
+                "message-success",
+                "message-error"
             );
         }, 2500);
     }

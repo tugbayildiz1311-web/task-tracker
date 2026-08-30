@@ -13,8 +13,14 @@ function renderTasks(tasksToRender) {
 
     tasksToRender.forEach((task) => {
         const card = document.createElement("article");
+
         card.classList.add("task-card");
         card.setAttribute("data-id", task.id);
+
+        if (task.status === "done") {
+            card.classList.add("task-completed");
+        }
+
 
         const cardHeader = document.createElement("div");
         cardHeader.classList.add("task-card-header");
@@ -23,6 +29,7 @@ function renderTasks(tasksToRender) {
         title.textContent = task.title;
 
         const priorityBadge = document.createElement("span");
+
         priorityBadge.classList.add(
             "badge",
             `badge-${task.priority}`
@@ -65,24 +72,67 @@ function renderTasks(tasksToRender) {
         const taskActions = document.createElement("div");
         taskActions.classList.add("task-actions");
 
+
         const editButton = document.createElement("button");
+
         editButton.type = "button";
+
         editButton.classList.add(
             "button",
             "button-secondary"
         );
+
         editButton.textContent = "Düzenle";
 
+        editButton.addEventListener(
+            "click",
+            function () {
+                editTask(task.id);
+            }
+        );
+
+
+        const statusButton = document.createElement("button");
+
+        statusButton.type = "button";
+
+        statusButton.classList.add(
+            "button",
+            "button-status"
+        );
+
+        statusButton.textContent = "Durum Değiştir";
+
+        statusButton.addEventListener(
+            "click",
+            function () {
+                changeTaskStatus(task.id);
+            }
+        );
+
+
         const deleteButton = document.createElement("button");
+
         deleteButton.type = "button";
+
         deleteButton.classList.add(
             "button",
             "button-danger"
         );
+
         deleteButton.textContent = "Sil";
+
+        deleteButton.addEventListener(
+            "click",
+            function () {
+                deleteTask(task.id);
+            }
+        );
+
 
         taskActions.append(
             editButton,
+            statusButton,
             deleteButton
         );
 
@@ -126,7 +176,8 @@ function formatDate(date) {
         return "Tarih belirtilmedi";
     }
 
-    const dateObject = new Date(`${date}T00:00:00`);
+    const dateObject =
+        new Date(`${date}T00:00:00`);
 
     if (Number.isNaN(dateObject.getTime())) {
         return "Geçersiz tarih";

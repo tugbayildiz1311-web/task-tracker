@@ -288,3 +288,105 @@ mesajının gösterilmesini sağladım.
 #### Dinamik Görev Listesi
 
 ![Dinamik görev listesi](screenshots/gun-25-dinamik-gorev-listesi.png)
+
+## Gün 26 - CRUD İşlemleri
+
+Bugünkü çalışmada Görev Takip Sistemi üzerinde CRUD işlemlerini tamamladım.
+
+CRUD yapısı:
+
+- **Create:** Yeni görev ekleme
+- **Read:** Görevleri listeleme
+- **Update:** Mevcut görevi düzenleme ve durumunu değiştirme
+- **Delete:** Görevi onay alarak silme
+
+### Görev Düzenleme
+
+Her görev kartına `Düzenle` butonu ekledim.
+
+Düzenleme işlemi sırasında görev `id` değeri kullanılarak `find()` ile bulundu ve mevcut bilgileri forma aktarıldı.
+
+Düzenleme modunu takip etmek için `editingTaskId` değişkenini kullandım.
+
+Düzenleme modunda formun gönderme butonunun metni:
+
+`Görevi Güncelle`
+
+olarak değiştirildi.
+
+Güncelleme tamamlandıktan sonra form tekrar normal görev ekleme moduna döndürüldü.
+
+### Görev Silme
+
+Her görev kartına `Sil` butonu ekledim.
+
+Görev silinmeden önce kullanıcıdan `confirm()` ile onay alınmasını sağladım.
+
+Görevin dizideki konumunu bulmak için `findIndex()` kullandım.
+
+Kullanıcı işlemi onayladığında görev:
+
+1. `tasks` dizisinden kaldırıldı.
+2. LocalStorage yeniden güncellendi.
+3. Görev listesi tekrar oluşturuldu.
+
+Kullanıcı işlemi iptal ettiğinde görev silinmedi.
+
+### Durum Değiştirme
+
+Her görev kartına `Durum Değiştir` butonu ekledim.
+
+Görev durumları aşağıdaki sırayla değişmektedir:
+
+```text
+Todo
+→ In Progress
+→ Done
+→ Todo
+```
+
+Her durum değişikliğinde görev dizisini ve LocalStorage verisini güncelledim.
+
+### Tamamlanan Görev Görünümü
+
+`done` durumundaki görev kartlarını diğer görevlerden görsel olarak ayırdım.
+
+Tamamlanan görevlerde:
+
+- `Tamamlandı` etiketi gösterildi.
+- Görev başlığının üzeri çizildi.
+- Kart daha soluk bir görünüm aldı.
+
+### Hata Kontrolü
+
+Düzenleme, silme veya durum değiştirme sırasında verilen `id` ile eşleşen görev bulunamazsa uygulamanın hata vermeden işlemi sonlandırmasını sağladım.
+
+### CRUD Testleri
+
+- Yeni görev ekleme testi başarılı.
+- Görev düzenleme testi başarılı.
+- Düzenleme sonrası yeni görev oluşturulmadığı doğrulandı.
+- Görev silme işleminde onay penceresi test edildi.
+- Silme işleminde İptal seçildiğinde görevin korunduğu doğrulandı.
+- Silme onaylandığında görevin listeden kaldırıldığı doğrulandı.
+- Todo → In Progress → Done durum geçişleri test edildi.
+- Done durumundaki tamamlandı görünümü kontrol edildi.
+- Tüm işlemlerden sonra sayfa yenilenerek LocalStorage kalıcılığı doğrulandı.
+
+### Gün 26 Ekran Görüntüleri
+
+#### Görev Düzenleme Modu
+
+![Görev düzenleme modu](screenshots/gun-26-gorev-duzenleme-modu.png)
+
+#### Tamamlanan Görev Görünümü
+
+![Done durum görünümü](screenshots/gun-26-done-durum-gorunumu.png)
+
+#### Görev Silme Onayı
+
+![Silme onayı](screenshots/gun-26-silme-onayi.png)
+
+#### CRUD Son Durum
+
+![CRUD son durum](screenshots/gun-26-crud-son-durum.png)

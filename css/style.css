@@ -238,3 +238,28 @@ button:focus {
         grid-template-columns: repeat(3, 1fr);
     }
 }
+
+.button-status {
+    background-color: #d9edf7;
+    color: #222;
+}
+
+.task-completed {
+    opacity: 0.75;
+    border-style: dashed;
+}
+
+.task-completed h3 {
+    text-decoration: line-through;
+}
+
+.task-completed::before {
+    content: "Tamamlandı";
+    display: inline-block;
+    margin-bottom: 12px;
+    padding: 5px 9px;
+    border-radius: 999px;
+    background-color: #d1e7dd;
+    font-size: 13px;
+    font-weight: bold;
+}
