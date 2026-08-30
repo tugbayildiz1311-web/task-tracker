@@ -1,276 +1,451 @@
-function renderTasks(tasksToRender) {
-    const taskList =
-        document.getElementById("taskList");
+export const TASK_STATUS = Object.freeze({
+    TODO: "todo",
+    IN_PROGRESS: "in-progress",
+    DONE: "done"
+});
 
+
+export const TASK_PRIORITY = Object.freeze({
+    LOW: "low",
+    MEDIUM: "medium",
+    HIGH: "high"
+});
+
+
+let messageTimeoutId = null;
+
+
+export function getDomElements() {
+    return {
+        taskForm:
+            document.getElementById("taskForm"),
+
+        taskTitle:
+            document.getElementById("taskTitle"),
+
+        taskDescription:
+            document.getElementById("taskDescription"),
+
+        taskPriority:
+            document.getElementById("taskPriority"),
+
+        taskStatus:
+            document.getElementById("taskStatus"),
+
+        taskDueDate:
+            document.getElementById("taskDueDate"),
+
+        formMessage:
+            document.getElementById("formMessage"),
+
+        titleError:
+            document.getElementById("titleError"),
+
+        taskList:
+            document.getElementById("taskList"),
+
+        emptyState:
+            document.getElementById("emptyState"),
+
+        emptyStateTitle:
+            document.getElementById("emptyStateTitle"),
+
+        emptyStateText:
+            document.getElementById("emptyStateText"),
+
+        resultCount:
+            document.getElementById("resultCount"),
+
+        searchInput:
+            document.getElementById("taskSearch"),
+
+        statusFilter:
+            document.getElementById("statusFilter"),
+
+        priorityFilter:
+            document.getElementById("priorityFilter"),
+
+        sortFilter:
+            document.getElementById("sortFilter"),
+
+        submitButton:
+            document.querySelector(
+                '#taskForm button[type="submit"]'
+            )
+    };
+}
+
+
+export function renderTasks(tasks, taskList) {
     taskList.textContent = "";
 
-    tasksToRender.forEach((task) => {
-        const card =
-            document.createElement("article");
-
-        card.classList.add("task-card");
-        card.setAttribute("data-id", task.id);
-
-
-        if (task.status === "done") {
-            card.classList.add(
-                "task-completed"
-            );
-        }
-
-
-        const cardHeader =
-            document.createElement("div");
-
-        cardHeader.classList.add(
-            "task-card-header"
+    tasks.forEach((task) => {
+        taskList.append(
+            createTaskCard(task)
         );
-
-
-        const title =
-            document.createElement("h3");
-
-        title.textContent = task.title;
-
-
-        const priorityBadge =
-            document.createElement("span");
-
-        priorityBadge.classList.add(
-            "badge",
-            `badge-${task.priority}`
-        );
-
-        priorityBadge.textContent =
-            getPriorityText(task.priority);
-
-
-        cardHeader.append(
-            title,
-            priorityBadge
-        );
-
-
-        if (isTaskOverdue(task)) {
-            const overdueBadge =
-                document.createElement("span");
-
-            overdueBadge.classList.add(
-                "badge",
-                "badge-overdue"
-            );
-
-            overdueBadge.textContent =
-                "Gecikti";
-
-            card.append(overdueBadge);
-        }
-
-
-        const description =
-            document.createElement("p");
-
-        description.textContent =
-            task.description ||
-            "Açıklama bulunmuyor";
-
-
-        const taskInfo =
-            document.createElement("div");
-
-        taskInfo.classList.add(
-            "task-info"
-        );
-
-
-        const status =
-            document.createElement("span");
-
-        status.textContent =
-            `Durum: ${getStatusText(task.status)}`;
-
-
-        const dueDate =
-            document.createElement("span");
-
-        dueDate.textContent =
-            `Son Tarih: ${formatDate(task.dueDate)}`;
-
-
-        taskInfo.append(
-            status,
-            dueDate
-        );
-
-
-        const taskActions =
-            document.createElement("div");
-
-        taskActions.classList.add(
-            "task-actions"
-        );
-
-
-        const editButton =
-            document.createElement("button");
-
-        editButton.type = "button";
-
-        editButton.classList.add(
-            "button",
-            "button-secondary"
-        );
-
-        editButton.textContent =
-            "Düzenle";
-
-        editButton.addEventListener(
-            "click",
-            function () {
-                editTask(task.id);
-            }
-        );
-
-
-        const statusButton =
-            document.createElement("button");
-
-        statusButton.type = "button";
-
-        statusButton.classList.add(
-            "button",
-            "button-status"
-        );
-
-        statusButton.textContent =
-            "Durum Değiştir";
-
-        statusButton.addEventListener(
-            "click",
-            function () {
-                changeTaskStatus(task.id);
-            }
-        );
-
-
-        const deleteButton =
-            document.createElement("button");
-
-        deleteButton.type = "button";
-
-        deleteButton.classList.add(
-            "button",
-            "button-danger"
-        );
-
-        deleteButton.textContent =
-            "Sil";
-
-        deleteButton.addEventListener(
-            "click",
-            function () {
-                deleteTask(task.id);
-            }
-        );
-
-
-        taskActions.append(
-            editButton,
-            statusButton,
-            deleteButton
-        );
-
-
-        card.append(
-            cardHeader,
-            description,
-            taskInfo,
-            taskActions
-        );
-
-        taskList.append(card);
     });
 }
 
 
-function updateListState(
+function createTaskCard(task) {
+    const card =
+        document.createElement("article");
+
+    card.classList.add("task-card");
+    card.dataset.id = task.id;
+
+    if (task.status === TASK_STATUS.DONE) {
+        card.classList.add("task-completed");
+    }
+
+    card.append(createTaskHeader(task));
+
+    if (isTaskOverdue(task)) {
+        card.append(
+            createBadge(
+                "Gecikti",
+                "badge-overdue"
+            )
+        );
+    }
+
+    card.append(
+        createDescription(task),
+        createTaskInfo(task),
+        createTaskActions(task)
+    );
+
+    return card;
+}
+
+
+function createTaskHeader(task) {
+    const header =
+        document.createElement("div");
+
+    header.classList.add(
+        "task-card-header"
+    );
+
+    const title =
+        document.createElement("h3");
+
+    title.textContent = task.title;
+
+    const priorityBadge =
+        createBadge(
+            getPriorityText(task.priority),
+            `badge-${task.priority}`
+        );
+
+    header.append(
+        title,
+        priorityBadge
+    );
+
+    return header;
+}
+
+
+function createDescription(task) {
+    const description =
+        document.createElement("p");
+
+    description.textContent =
+        task.description ||
+        "Açıklama bulunmuyor";
+
+    return description;
+}
+
+
+function createTaskInfo(task) {
+    const taskInfo =
+        document.createElement("div");
+
+    taskInfo.classList.add("task-info");
+
+    const status =
+        document.createElement("span");
+
+    status.textContent =
+        `Durum: ${getStatusText(task.status)}`;
+
+    const dueDate =
+        document.createElement("span");
+
+    dueDate.textContent =
+        `Son Tarih: ${formatDate(task.dueDate)}`;
+
+    taskInfo.append(
+        status,
+        dueDate
+    );
+
+    return taskInfo;
+}
+
+
+function createTaskActions(task) {
+    const actions =
+        document.createElement("div");
+
+    actions.classList.add(
+        "task-actions"
+    );
+
+    actions.append(
+        createActionButton(
+            "Düzenle",
+            "edit",
+            task.id,
+            "button-secondary"
+        ),
+
+        createActionButton(
+            "Durum Değiştir",
+            "status",
+            task.id,
+            "button-status"
+        ),
+
+        createActionButton(
+            "Sil",
+            "delete",
+            task.id,
+            "button-danger"
+        )
+    );
+
+    return actions;
+}
+
+
+function createActionButton(
+    text,
+    action,
+    taskId,
+    className
+) {
+    const button =
+        document.createElement("button");
+
+    button.type = "button";
+    button.textContent = text;
+
+    button.dataset.action = action;
+    button.dataset.id = taskId;
+
+    button.classList.add(
+        "button",
+        className
+    );
+
+    return button;
+}
+
+
+function createBadge(text, className) {
+    const badge =
+        document.createElement("span");
+
+    badge.classList.add(
+        "badge",
+        className
+    );
+
+    badge.textContent = text;
+
+    return badge;
+}
+
+
+export function updateListState(
+    elements,
     visibleCount,
     totalCount,
     hasActiveFilters
 ) {
-    const emptyState =
-        document.getElementById("emptyState");
-
-    const emptyStateTitle =
-        document.getElementById(
-            "emptyStateTitle"
-        );
-
-    const emptyStateText =
-        document.getElementById(
-            "emptyStateText"
-        );
-
-    const resultCount =
-        document.getElementById(
-            "resultCount"
-        );
-
-
-    resultCount.textContent =
+    elements.resultCount.textContent =
         `${totalCount} görevden ${visibleCount} tanesi gösteriliyor`;
 
-
     if (visibleCount > 0) {
-        emptyState.hidden = true;
+        elements.emptyState.hidden = true;
         return;
     }
 
+    elements.emptyState.hidden = false;
 
-    emptyState.hidden = false;
-
-
-    if (
-        totalCount > 0 &&
+    setEmptyStateMessage(
+        elements,
+        totalCount,
         hasActiveFilters
-    ) {
-        emptyStateTitle.textContent =
-            "Filtrelere uygun görev bulunamadı";
-
-        emptyStateText.textContent =
-            "Arama veya filtre seçeneklerini değiştirerek tekrar deneyebilirsiniz.";
-
-        return;
-    }
+    );
+}
 
 
-    emptyStateTitle.textContent =
-        "Henüz görev bulunmuyor";
+function setEmptyStateMessage(
+    elements,
+    totalCount,
+    hasActiveFilters
+) {
+    const noFilterResult =
+        totalCount > 0 &&
+        hasActiveFilters;
 
-    emptyStateText.textContent =
-        "Yeni bir görev ekleyerek başlayabilirsiniz.";
+    elements.emptyStateTitle.textContent =
+        noFilterResult
+            ? "Filtrelere uygun görev bulunamadı"
+            : "Henüz görev bulunmuyor";
+
+    elements.emptyStateText.textContent =
+        noFilterResult
+            ? "Arama veya filtre seçeneklerini değiştirerek tekrar deneyebilirsiniz."
+            : "Yeni bir görev ekleyerek başlayabilirsiniz.";
+}
+
+
+export function fillTaskForm(
+    elements,
+    task
+) {
+    elements.taskTitle.value =
+        task.title;
+
+    elements.taskDescription.value =
+        task.description;
+
+    elements.taskPriority.value =
+        task.priority;
+
+    elements.taskStatus.value =
+        task.status;
+
+    elements.taskDueDate.value =
+        task.dueDate;
+}
+
+
+export function resetTaskForm(elements) {
+    elements.taskForm.reset();
+
+    elements.taskPriority.value =
+        TASK_PRIORITY.MEDIUM;
+
+    elements.taskStatus.value =
+        TASK_STATUS.TODO;
+
+    elements.submitButton.textContent =
+        "Görevi Kaydet";
+
+    clearTitleError(elements);
+}
+
+
+export function setEditMode(elements) {
+    elements.submitButton.textContent =
+        "Görevi Güncelle";
+
+    elements.taskTitle.focus();
+
+    window.scrollTo({
+        top: 0,
+        behavior: "smooth"
+    });
+}
+
+
+export function showFormMessage(
+    elements,
+    message,
+    type
+) {
+    clearTimeout(messageTimeoutId);
+
+    elements.formMessage.textContent =
+        message;
+
+    elements.formMessage.classList.remove(
+        "message-success",
+        "message-error"
+    );
+
+    elements.formMessage.classList.add(
+        type === "success"
+            ? "message-success"
+            : "message-error"
+    );
+
+    messageTimeoutId =
+        setTimeout(() => {
+            clearFormMessage(elements);
+        }, 2500);
+}
+
+
+export function clearFormMessage(elements) {
+    elements.formMessage.textContent = "";
+
+    elements.formMessage.classList.remove(
+        "message-success",
+        "message-error"
+    );
+}
+
+
+export function showTitleError(
+    elements,
+    message
+) {
+    elements.titleError.textContent =
+        message;
+
+    elements.taskTitle.classList.add(
+        "input-invalid"
+    );
+
+    elements.taskTitle.focus();
+}
+
+
+export function clearTitleError(elements) {
+    elements.titleError.textContent = "";
+
+    elements.taskTitle.classList.remove(
+        "input-invalid"
+    );
 }
 
 
 function getPriorityText(priority) {
     const priorityTexts = {
-        low: "Low",
-        medium: "Medium",
-        high: "High"
+        [TASK_PRIORITY.LOW]: "Low",
+        [TASK_PRIORITY.MEDIUM]: "Medium",
+        [TASK_PRIORITY.HIGH]: "High"
     };
 
-    return priorityTexts[priority] || priority;
+    return (
+        priorityTexts[priority] ||
+        priority
+    );
 }
 
 
 function getStatusText(status) {
     const statusTexts = {
-        todo: "Todo",
-        "in-progress": "In Progress",
-        done: "Done"
+        [TASK_STATUS.TODO]: "Todo",
+
+        [TASK_STATUS.IN_PROGRESS]:
+            "In Progress",
+
+        [TASK_STATUS.DONE]:
+            "Done"
     };
 
-    return statusTexts[status] || status;
+    return (
+        statusTexts[status] ||
+        status
+    );
 }
 
 
@@ -282,15 +457,11 @@ function getValidDate(date) {
     const dateObject =
         new Date(`${date}T00:00:00`);
 
-    if (
-        Number.isNaN(
-            dateObject.getTime()
-        )
-    ) {
-        return null;
-    }
-
-    return dateObject;
+    return Number.isNaN(
+        dateObject.getTime()
+    )
+        ? null
+        : dateObject;
 }
 
 
@@ -309,7 +480,10 @@ function formatDate(date) {
 
 
 function isTaskOverdue(task) {
-    if (task.status === "done") {
+    if (
+        task.status ===
+        TASK_STATUS.DONE
+    ) {
         return false;
     }
 
@@ -320,16 +494,9 @@ function isTaskOverdue(task) {
         return false;
     }
 
-
     const today = new Date();
 
-    today.setHours(
-        0,
-        0,
-        0,
-        0
-    );
-
+    today.setHours(0, 0, 0, 0);
 
     return dueDate < today;
 }
