@@ -390,3 +390,87 @@ Düzenleme, silme veya durum değiştirme sırasında verilen `id` ile eşleşen
 #### CRUD Son Durum
 
 ![CRUD son durum](screenshots/gun-26-crud-son-durum.png)
+
+## Gün 27 - Görev Arama, Filtreleme ve Sıralama
+
+Bugünkü çalışmada Görev Takip Sistemi'ne arama, filtreleme ve sıralama özellikleri ekledim.
+
+### Arama
+
+Görev başlığı ve açıklaması üzerinde büyük-küçük harf duyarsız arama yapılmasını sağladım.
+
+Arama metnini `trim()` ve `toLowerCase()` kullanarak normalize ettim.
+
+### Filtreleme
+
+Görevleri aşağıdaki alanlara göre filtreleyebilecek yapı oluşturdum:
+
+- Durum: Todo, In Progress, Done
+- Öncelik: Low, Medium, High
+
+Arama, durum filtresi ve öncelik filtresinin aynı anda çalışmasını `applyFilters()` fonksiyonu içerisinde yönettim.
+
+Filtreleme sırasında ana `tasks` dizisini değiştirmeden ayrı bir filtrelenmiş liste kullandım.
+
+### Sonuç Sayısı
+
+Kullanıcıya görüntülenen görev sayısını göstermek için:
+
+`5 görevden 2 tanesi gösteriliyor`
+
+şeklinde sonuç bilgisi ekledim.
+
+### Tarihe Göre Sıralama
+
+Görevlerin son tarihlerine göre artan şekilde sıralanmasını sağladım.
+
+Geçerli tarih değerlerini `Date` nesnesine dönüştürerek karşılaştırdım. Boş veya geçersiz tarihlerin uygulamada hata oluşturmamasını sağladım.
+
+### Gecikmiş Görevler
+
+Son tarihi geçmiş ve henüz `done` durumuna gelmemiş görevlerde `Gecikti` etiketi gösterdim.
+
+Tamamlanan görevlerde gecikme etiketi gösterilmemektedir.
+
+### Boş Filtre Sonucu
+
+Filtre veya arama sonucunda eşleşen görev bulunmadığında:
+
+`Filtrelere uygun görev bulunamadı`
+
+mesajının gösterilmesini sağladım.
+
+### Form Doğrulama
+
+Başlık alanına yalnızca boşluk girilmesini engelledim. Başlık doğrulama mesajını ilgili input alanına yakın şekilde gösterdim.
+
+### Test Senaryoları
+
+1. Görev başlığına göre arama test edildi.
+2. Görev açıklamasına göre arama test edildi.
+3. Büyük-küçük harf duyarsız arama test edildi.
+4. Durum filtresi test edildi.
+5. Öncelik filtresi test edildi.
+6. Arama, durum ve öncelik filtrelerinin birlikte çalışması test edildi.
+7. Filtre sonucu bulunamayan senaryo test edildi.
+8. Son tarihe göre artan sıralama test edildi.
+9. Sonuç sayısının filtrelere göre değiştiği doğrulandı.
+10. Gecikmiş ve tamamlanmamış görevlerde `Gecikti` etiketinin gösterildiği kontrol edildi.
+
+### Gün 27 Ekran Görüntüleri
+
+#### Arama ve Sonuç Sayısı
+
+![Arama ve sonuç sayısı](screenshots/gun-27-arama-ve-sonuc-sayisi.png)
+
+#### Çoklu Filtreleme
+
+![Çoklu filtreleme](screenshots/gun-27-coklu-filtreleme.png)
+
+#### Filtre Sonucu Bulunamadı
+
+![Filtre sonucu yok](screenshots/gun-27-filtre-sonucu-yok.png)
+
+#### Tarih Sıralama ve Geciken Görev
+
+![Tarih sıralama ve geciken görev](screenshots/gun-27-tarih-siralama-ve-geciken-gorev.png)

@@ -83,6 +83,17 @@ button:focus {
     outline-offset: 2px;
 }
 
+.input-invalid {
+    border-color: #c62828;
+}
+
+.input-error {
+    min-height: 18px;
+    margin: 0;
+    color: #c62828;
+    font-size: 14px;
+}
+
 .form-row,
 .filter-grid {
     display: grid;
@@ -112,6 +123,11 @@ button:focus {
     color: #222;
 }
 
+.button-status {
+    background-color: #d9edf7;
+    color: #222;
+}
+
 .button-danger {
     background-color: #d9534f;
     color: white;
@@ -129,6 +145,12 @@ button:focus {
 
 .message-error {
     color: #c62828;
+}
+
+.result-count {
+    margin: 4px 0 0;
+    color: #555;
+    font-weight: bold;
 }
 
 .task-list {
@@ -170,11 +192,13 @@ button:focus {
 
 .task-actions {
     display: flex;
+    flex-wrap: wrap;
     gap: 8px;
 }
 
 .badge {
     display: inline-block;
+    width: fit-content;
     padding: 5px 9px;
     border-radius: 999px;
     font-size: 13px;
@@ -192,6 +216,32 @@ button:focus {
 
 .badge-low {
     background-color: #d1e7dd;
+}
+
+.badge-overdue {
+    margin: 10px 0 0;
+    background-color: #f8d7da;
+    color: #842029;
+}
+
+.task-completed {
+    opacity: 0.75;
+    border-style: dashed;
+}
+
+.task-completed h3 {
+    text-decoration: line-through;
+}
+
+.task-completed::before {
+    content: "Tamamlandı";
+    display: inline-block;
+    margin-bottom: 12px;
+    padding: 5px 9px;
+    border-radius: 999px;
+    background-color: #d1e7dd;
+    font-size: 13px;
+    font-weight: bold;
 }
 
 .empty-state {
@@ -220,7 +270,7 @@ button:focus {
     }
 
     .filter-grid {
-        grid-template-columns: 2fr 1fr 1fr;
+        grid-template-columns: repeat(2, 1fr);
     }
 
     .task-list {
@@ -234,32 +284,11 @@ button:focus {
 }
 
 @media (min-width: 1000px) {
+    .filter-grid {
+        grid-template-columns: 2fr 1fr 1fr 1.5fr;
+    }
+
     .task-list {
         grid-template-columns: repeat(3, 1fr);
     }
-}
-
-.button-status {
-    background-color: #d9edf7;
-    color: #222;
-}
-
-.task-completed {
-    opacity: 0.75;
-    border-style: dashed;
-}
-
-.task-completed h3 {
-    text-decoration: line-through;
-}
-
-.task-completed::before {
-    content: "Tamamlandı";
-    display: inline-block;
-    margin-bottom: 12px;
-    padding: 5px 9px;
-    border-radius: 999px;
-    background-color: #d1e7dd;
-    font-size: 13px;
-    font-weight: bold;
 }

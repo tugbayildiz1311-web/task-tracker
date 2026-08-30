@@ -34,6 +34,12 @@
                         maxlength="100"
                         placeholder="Görev başlığını yazın"
                     >
+
+                    <p
+                        id="titleError"
+                        class="input-error"
+                        aria-live="polite"
+                    ></p>
                 </div>
 
                 <div class="form-group">
@@ -113,6 +119,7 @@
                 <p
                     id="formMessage"
                     class="form-message"
+                    aria-live="polite"
                 ></p>
 
             </form>
@@ -120,7 +127,7 @@
 
 
         <section class="filter-section">
-            <h2>Görevleri Filtrele</h2>
+            <h2>Görevleri Ara ve Filtrele</h2>
 
             <div class="filter-grid">
 
@@ -132,7 +139,7 @@
                     <input
                         type="search"
                         id="taskSearch"
-                        placeholder="Görev başlığı ara"
+                        placeholder="Başlık veya açıklamada ara"
                     >
                 </div>
 
@@ -184,7 +191,28 @@
                     </select>
                 </div>
 
+                <div class="form-group">
+                    <label for="sortFilter">
+                        Sıralama
+                    </label>
+
+                    <select id="sortFilter">
+                        <option value="default">
+                            Varsayılan
+                        </option>
+
+                        <option value="due-date-asc">
+                            Son tarihe göre artan
+                        </option>
+                    </select>
+                </div>
+
             </div>
+
+            <p
+                id="resultCount"
+                class="result-count"
+            ></p>
         </section>
 
 
@@ -201,9 +229,11 @@
                 id="emptyState"
                 hidden
             >
-                <h3>Henüz görev bulunmuyor</h3>
+                <h3 id="emptyStateTitle">
+                    Henüz görev bulunmuyor
+                </h3>
 
-                <p>
+                <p id="emptyStateText">
                     Yeni bir görev ekleyerek başlayabilirsiniz.
                 </p>
             </div>

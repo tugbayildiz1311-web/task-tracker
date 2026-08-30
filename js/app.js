@@ -10,28 +10,67 @@ const taskTitle =
     document.getElementById("taskTitle");
 
 const taskDescription =
-    document.getElementById("taskDescription");
+    document.getElementById(
+        "taskDescription"
+    );
 
 const taskPriority =
-    document.getElementById("taskPriority");
+    document.getElementById(
+        "taskPriority"
+    );
 
 const taskStatus =
-    document.getElementById("taskStatus");
+    document.getElementById(
+        "taskStatus"
+    );
 
 const taskDueDate =
-    document.getElementById("taskDueDate");
+    document.getElementById(
+        "taskDueDate"
+    );
 
 const formMessage =
-    document.getElementById("formMessage");
+    document.getElementById(
+        "formMessage"
+    );
+
+const titleError =
+    document.getElementById(
+        "titleError"
+    );
 
 const submitButton =
-    taskForm.querySelector('button[type="submit"]');
+    taskForm.querySelector(
+        'button[type="submit"]'
+    );
+
+
+const searchInput =
+    document.getElementById(
+        "taskSearch"
+    );
+
+const statusFilter =
+    document.getElementById(
+        "statusFilter"
+    );
+
+const priorityFilter =
+    document.getElementById(
+        "priorityFilter"
+    );
+
+const sortFilter =
+    document.getElementById(
+        "sortFilter"
+    );
 
 
 function createTaskId() {
     if (
         typeof crypto !== "undefined" &&
-        typeof crypto.randomUUID === "function"
+        typeof crypto.randomUUID ===
+            "function"
     ) {
         return crypto.randomUUID();
     }
@@ -42,12 +81,22 @@ function createTaskId() {
 
 function validateTask(taskData) {
     if (taskData.title === "") {
-        return "Görev başlığı boş bırakılamaz.";
+        return {
+            field: "title",
+            message:
+                "Görev başlığı boş bırakılamaz."
+        };
     }
 
+
     if (taskData.title.length > 100) {
-        return "Görev başlığı en fazla 100 karakter olabilir.";
+        return {
+            field: "title",
+            message:
+                "Görev başlığı en fazla 100 karakter olabilir."
+        };
     }
+
 
     const validPriorities = [
         "low",
@@ -55,9 +104,18 @@ function validateTask(taskData) {
         "high"
     ];
 
-    if (!validPriorities.includes(taskData.priority)) {
-        return "Geçersiz öncelik değeri.";
+    if (
+        !validPriorities.includes(
+            taskData.priority
+        )
+    ) {
+        return {
+            field: "form",
+            message:
+                "Geçersiz öncelik değeri."
+        };
     }
+
 
     const validStatuses = [
         "todo",
@@ -65,32 +123,62 @@ function validateTask(taskData) {
         "done"
     ];
 
-    if (!validStatuses.includes(taskData.status)) {
-        return "Geçersiz durum değeri.";
-    }
-
     if (
-        taskData.dueDate === "" ||
-        Number.isNaN(
-            new Date(
-                `${taskData.dueDate}T00:00:00`
-            ).getTime()
+        !validStatuses.includes(
+            taskData.status
         )
     ) {
-        return "Geçerli bir son tarih seçiniz.";
+        return {
+            field: "form",
+            message:
+                "Geçersiz durum değeri."
+        };
     }
+
+
+    if (taskData.dueDate === "") {
+        return {
+            field: "form",
+            message:
+                "Son tarih boş bırakılamaz."
+        };
+    }
+
+
+    const dateObject =
+        new Date(
+            `${taskData.dueDate}T00:00:00`
+        );
+
+    if (
+        Number.isNaN(
+            dateObject.getTime()
+        )
+    ) {
+        return {
+            field: "form",
+            message:
+                "Geçerli bir son tarih seçiniz."
+        };
+    }
+
 
     return null;
 }
 
 
-function showFormMessage(message, type) {
-    formMessage.textContent = message;
+function showFormMessage(
+    message,
+    type
+) {
+    formMessage.textContent =
+        message;
 
     formMessage.classList.remove(
         "message-success",
         "message-error"
     );
+
 
     if (type === "success") {
         formMessage.classList.add(
@@ -98,11 +186,46 @@ function showFormMessage(message, type) {
         );
     }
 
+
     if (type === "error") {
         formMessage.classList.add(
             "message-error"
         );
     }
+}
+
+
+function clearValidationMessages() {
+    titleError.textContent = "";
+
+    taskTitle.classList.remove(
+        "input-invalid"
+    );
+}
+
+
+function showValidationError(error) {
+    clearValidationMessages();
+
+
+    if (error.field === "title") {
+        titleError.textContent =
+            error.message;
+
+        taskTitle.classList.add(
+            "input-invalid"
+        );
+
+        taskTitle.focus();
+
+        return;
+    }
+
+
+    showFormMessage(
+        error.message,
+        "error"
+    );
 }
 
 
@@ -114,14 +237,25 @@ function resetFormMode() {
     taskPriority.value = "medium";
     taskStatus.value = "todo";
 
-    submitButton.textContent = "Görevi Kaydet";
+    submitButton.textContent =
+        "Görevi Kaydet";
+
+    clearValidationMessages();
+}
+
+
+function getTaskById(taskId) {
+    return tasks.find(
+        (task) =>
+            task.id === taskId
+    );
 }
 
 
 function editTask(taskId) {
-    const task = tasks.find(
-        (task) => task.id === taskId
-    );
+    const task =
+        getTaskById(taskId);
+
 
     if (!task) {
         showFormMessage(
@@ -132,18 +266,33 @@ function editTask(taskId) {
         return;
     }
 
+
     editingTaskId = task.id;
 
-    taskTitle.value = task.title;
-    taskDescription.value = task.description;
-    taskPriority.value = task.priority;
-    taskStatus.value = task.status;
-    taskDueDate.value = task.dueDate;
+    taskTitle.value =
+        task.title;
+
+    taskDescription.value =
+        task.description;
+
+    taskPriority.value =
+        task.priority;
+
+    taskStatus.value =
+        task.status;
+
+    taskDueDate.value =
+        task.dueDate;
+
 
     submitButton.textContent =
         "Görevi Güncelle";
 
+
+    clearValidationMessages();
+
     taskTitle.focus();
+
 
     window.scrollTo({
         top: 0,
@@ -153,9 +302,12 @@ function editTask(taskId) {
 
 
 function deleteTask(taskId) {
-    const taskIndex = tasks.findIndex(
-        (task) => task.id === taskId
-    );
+    const taskIndex =
+        tasks.findIndex(
+            (task) =>
+                task.id === taskId
+        );
+
 
     if (taskIndex === -1) {
         showFormMessage(
@@ -166,23 +318,34 @@ function deleteTask(taskId) {
         return;
     }
 
-    const confirmed = confirm(
-        "Bu görevi silmek istediğinize emin misiniz?"
-    );
+
+    const confirmed =
+        confirm(
+            "Bu görevi silmek istediğinize emin misiniz?"
+        );
+
 
     if (!confirmed) {
         return;
     }
 
-    tasks.splice(taskIndex, 1);
+
+    tasks.splice(
+        taskIndex,
+        1
+    );
 
     saveTasks(tasks);
 
-    renderTasks(tasks);
+    applyFilters();
 
-    if (editingTaskId === taskId) {
+
+    if (
+        editingTaskId === taskId
+    ) {
         resetFormMode();
     }
+
 
     showFormMessage(
         "Görev başarıyla silindi.",
@@ -192,9 +355,9 @@ function deleteTask(taskId) {
 
 
 function changeTaskStatus(taskId) {
-    const task = tasks.find(
-        (task) => task.id === taskId
-    );
+    const task =
+        getTaskById(taskId);
+
 
     if (!task) {
         showFormMessage(
@@ -205,23 +368,178 @@ function changeTaskStatus(taskId) {
         return;
     }
 
-    if (task.status === "todo") {
-        task.status = "in-progress";
 
-    } else if (task.status === "in-progress") {
+    if (task.status === "todo") {
+        task.status =
+            "in-progress";
+
+    } else if (
+        task.status ===
+        "in-progress"
+    ) {
         task.status = "done";
 
     } else {
         task.status = "todo";
     }
 
+
     saveTasks(tasks);
 
-    renderTasks(tasks);
+    applyFilters();
+
 
     showFormMessage(
         "Görev durumu güncellendi.",
         "success"
+    );
+}
+
+
+function getDateForSorting(date) {
+    if (!date) {
+        return null;
+    }
+
+
+    const dateObject =
+        new Date(
+            `${date}T00:00:00`
+        );
+
+
+    if (
+        Number.isNaN(
+            dateObject.getTime()
+        )
+    ) {
+        return null;
+    }
+
+
+    return dateObject;
+}
+
+
+function applyFilters() {
+    const searchText =
+        searchInput.value
+            .trim()
+            .toLowerCase();
+
+    const selectedStatus =
+        statusFilter.value;
+
+    const selectedPriority =
+        priorityFilter.value;
+
+    const selectedSort =
+        sortFilter.value;
+
+
+    let filteredTasks =
+        tasks.filter((task) => {
+            const normalizedTitle =
+                String(
+                    task.title || ""
+                ).toLowerCase();
+
+            const normalizedDescription =
+                String(
+                    task.description || ""
+                ).toLowerCase();
+
+
+            const matchesSearch =
+                searchText === "" ||
+                normalizedTitle.includes(
+                    searchText
+                ) ||
+                normalizedDescription.includes(
+                    searchText
+                );
+
+
+            const matchesStatus =
+                selectedStatus ===
+                    "all" ||
+                task.status ===
+                    selectedStatus;
+
+
+            const matchesPriority =
+                selectedPriority ===
+                    "all" ||
+                task.priority ===
+                    selectedPriority;
+
+
+            return (
+                matchesSearch &&
+                matchesStatus &&
+                matchesPriority
+            );
+        });
+
+
+    if (
+        selectedSort ===
+        "due-date-asc"
+    ) {
+        filteredTasks =
+            [...filteredTasks].sort(
+                (firstTask, secondTask) => {
+                    const firstDate =
+                        getDateForSorting(
+                            firstTask.dueDate
+                        );
+
+                    const secondDate =
+                        getDateForSorting(
+                            secondTask.dueDate
+                        );
+
+
+                    if (
+                        !firstDate &&
+                        !secondDate
+                    ) {
+                        return 0;
+                    }
+
+
+                    if (!firstDate) {
+                        return 1;
+                    }
+
+
+                    if (!secondDate) {
+                        return -1;
+                    }
+
+
+                    return (
+                        firstDate -
+                        secondDate
+                    );
+                }
+            );
+    }
+
+
+    const hasActiveFilters =
+        searchText !== "" ||
+        selectedStatus !== "all" ||
+        selectedPriority !== "all" ||
+        selectedSort !== "default";
+
+
+    renderTasks(filteredTasks);
+
+    updateListState(
+        filteredTasks.length,
+        tasks.length,
+        hasActiveFilters
     );
 }
 
@@ -231,8 +549,12 @@ taskForm.addEventListener(
     function (event) {
         event.preventDefault();
 
+        clearValidationMessages();
+
+
         const taskData = {
-            title: taskTitle.value.trim(),
+            title:
+                taskTitle.value.trim(),
 
             description:
                 taskDescription.value.trim(),
@@ -251,21 +573,28 @@ taskForm.addEventListener(
         const validationError =
             validateTask(taskData);
 
-        if (validationError !== null) {
-            showFormMessage(
-                validationError,
-                "error"
+
+        if (
+            validationError !== null
+        ) {
+            showValidationError(
+                validationError
             );
 
             return;
         }
 
 
-        if (editingTaskId !== null) {
-            const taskIndex = tasks.findIndex(
-                (task) =>
-                    task.id === editingTaskId
-            );
+        if (
+            editingTaskId !== null
+        ) {
+            const taskIndex =
+                tasks.findIndex(
+                    (task) =>
+                        task.id ===
+                        editingTaskId
+                );
+
 
             if (taskIndex === -1) {
                 showFormMessage(
@@ -274,13 +603,16 @@ taskForm.addEventListener(
                 );
 
                 resetFormMode();
+
                 return;
             }
+
 
             tasks[taskIndex] = {
                 ...tasks[taskIndex],
 
-                title: taskData.title,
+                title:
+                    taskData.title,
 
                 description:
                     taskData.description,
@@ -295,11 +627,13 @@ taskForm.addEventListener(
                     taskData.dueDate
             };
 
+
             saveTasks(tasks);
 
-            renderTasks(tasks);
+            applyFilters();
 
             resetFormMode();
+
 
             showFormMessage(
                 "Görev başarıyla güncellendi.",
@@ -308,7 +642,8 @@ taskForm.addEventListener(
 
         } else {
             const newTask = {
-                id: createTaskId(),
+                id:
+                    createTaskId(),
 
                 title:
                     taskData.title,
@@ -329,13 +664,15 @@ taskForm.addEventListener(
                     new Date().toISOString()
             };
 
+
             tasks.push(newTask);
 
             saveTasks(tasks);
 
-            renderTasks(tasks);
+            applyFilters();
 
             resetFormMode();
+
 
             showFormMessage(
                 "Görev başarıyla eklendi.",
@@ -344,16 +681,62 @@ taskForm.addEventListener(
         }
 
 
-        setTimeout(function () {
-            formMessage.textContent = "";
+        setTimeout(
+            function () {
+                formMessage.textContent =
+                    "";
 
-            formMessage.classList.remove(
-                "message-success",
-                "message-error"
-            );
-        }, 2500);
+                formMessage.classList.remove(
+                    "message-success",
+                    "message-error"
+                );
+            },
+            2500
+        );
     }
 );
 
 
-renderTasks(tasks);
+taskTitle.addEventListener(
+    "input",
+    function () {
+        if (
+            taskTitle.value
+                .trim() !== ""
+        ) {
+            titleError.textContent =
+                "";
+
+            taskTitle.classList.remove(
+                "input-invalid"
+            );
+        }
+    }
+);
+
+
+searchInput.addEventListener(
+    "input",
+    applyFilters
+);
+
+
+statusFilter.addEventListener(
+    "change",
+    applyFilters
+);
+
+
+priorityFilter.addEventListener(
+    "change",
+    applyFilters
+);
+
+
+sortFilter.addEventListener(
+    "change",
+    applyFilters
+);
+
+
+applyFilters();
