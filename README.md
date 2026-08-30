@@ -190,3 +190,101 @@ Mobil görünümde form, filtreler ve görev kartları tek sütun halinde görü
 ### 375px Mobil Görünüm
 
 ![375px mobil görünüm](screenshots/gun-24-mobil-375px.png)
+
+## Gün 25 - Görev Ekleme ve Dinamik Listeleme
+
+Görev Takip Sistemi'nin statik görev kartlarını kaldırarak görevlerin JavaScript üzerinden dinamik olarak oluşturulmasını sağladım.
+
+### Görev Veri Modeli
+
+Yeni görevler aşağıdaki alanlardan oluşmaktadır:
+
+- `id`
+- `title`
+- `description`
+- `priority`
+- `status`
+- `dueDate`
+- `createdAt`
+
+Görevler form üzerinden oluşturulduktan sonra `tasks` dizisine eklenmekte ve LocalStorage içerisinde saklanmaktadır.
+
+### Form Akışı
+
+Form gönderildiğinde aşağıdaki işlem sırasını uyguladım:
+
+1. Formun submit event'ini yakaladım.
+2. `preventDefault()` ile sayfanın yenilenmesini engelledim.
+3. Form değerlerini aldım ve metin alanlarında `trim()` kullandım.
+4. Verileri doğruladım.
+5. Geçerli verilerle yeni task object oluşturdum.
+6. Yeni görevi `tasks` dizisine ekledim.
+7. Diziyi LocalStorage'a kaydettim.
+8. `renderTasks()` fonksiyonuyla görev listesini yeniden oluşturdum.
+9. Form alanlarını temizledim.
+10. Kullanıcıya kısa süreli başarı mesajı gösterdim.
+
+### Doğrulama Kontrolleri
+
+Görev başlığının boş bırakılmasını engelledim.
+
+Başlığın 100 karakterden uzun olması durumunda kullanıcıya hata mesajı gösterdim.
+
+Priority ve status değerlerinin belirlenen seçeneklerden biri olmasını kontrol ettim.
+
+Son tarih bilgisinin geçerli bir tarih olmasını doğruladım.
+
+### Dinamik Görev Kartları
+
+`renderTasks(tasks)` fonksiyonu ile görev kartlarını JavaScript kullanarak dinamik olarak oluşturdum.
+
+Her kartta:
+
+- Görev başlığı
+- Açıklama
+- Öncelik
+- Durum
+- Son tarih
+- Düzenle butonu
+- Sil butonu
+
+görüntülenmektedir.
+
+### LocalStorage
+
+Görev listesini `JSON.stringify()` kullanarak LocalStorage içerisinde sakladım.
+
+Sayfa açıldığında verileri `JSON.parse()` ile tekrar JavaScript dizisine dönüştürdüm.
+
+Sayfayı yenileyerek eklediğim beş görevin kaybolmadığını ve LocalStorage üzerinden tekrar yüklendiğini doğruladım.
+
+### Boş Liste Durumu
+
+Görev bulunmadığında kullanıcıya:
+
+`Henüz görev bulunmuyor`
+
+mesajının gösterilmesini sağladım.
+
+### Testler
+
+- Boş görev başlığı kontrol edildi.
+- 100 karakterden uzun başlık kontrol edildi.
+- Beş farklı görev başarıyla eklendi.
+- Low, Medium ve High öncelikleri test edildi.
+- Todo, In Progress ve Done durumları test edildi.
+- Sayfa yenilenerek LocalStorage kalıcılığı doğrulandı.
+
+### Gün 25 Ekran Görüntüleri
+
+#### Form Doğrulama
+
+![Form doğrulama](screenshots/gun-25-form-dogrulama.png)
+
+#### 100 Karakter Kontrolü
+
+![100 karakter kontrolü](screenshots/gun-25-100-karakter-kontrolu.png)
+
+#### Dinamik Görev Listesi
+
+![Dinamik görev listesi](screenshots/gun-25-dinamik-gorev-listesi.png)

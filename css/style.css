@@ -117,6 +117,20 @@ button:focus {
     color: white;
 }
 
+.form-message {
+    min-height: 22px;
+    margin: 12px 0 0;
+    font-weight: bold;
+}
+
+.message-success {
+    color: green;
+}
+
+.message-error {
+    color: #c62828;
+}
+
 .task-list {
     display: grid;
     grid-template-columns: 1fr;
